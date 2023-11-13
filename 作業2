@@ -1,0 +1,47 @@
+from math import floor
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+from time import sleep
+import csv
+
+# 啟動Chrome瀏覽器
+driver = webdriver.Chrome()
+
+# 導航至網站
+driver.get("https://www.edu.tw/Default.aspx")
+
+# 執行搜尋和查詢
+driver.find_element(By.ID, "tagsKeyWords").click()
+
+# 直接使用find_element_by_class_name而不是By.CLASS_NAME
+SelectElem = driver.find_element_by_class_name("practice2-2")
+Select(SelectElem).select_by_value("01")
+driver.find_element(By.ID, "Button1").click()
+
+# 創建CSV文件
+table = [["學年度", "出處"]]
+totalPage = floor(int(driver.find_element(By.ID, 'RecordCnt').find_element(By.TAG_NAME, "font").text) / 10 + 1)
+
+print("totalPage", totalPage)
+
+for currentpage in range(1, totalPage + 1):  # 包含最後一頁
+    for i, row in enumerate(driver.find_elements(By.CLASS_NAME, "GridViewRowStyle")):
+        rowData = [column.text for column in row.find_elements(By.TAG_NAME, "td")]
+        table.append(rowData)
+
+    nextPage = driver.find_element(By.ID, 'BtnNext')
+    nextPage.click()
+    print("currentpage", currentpage)
+    # 避免對伺服器造成壓力
+    sleep(1)
+
+# 關閉瀏覽器
+driver.quit()
+
+# 將數據寫入CSV文件
+with open('result.csv', 'w', newline='', encoding="utf8") as csvfile:
+    writer = csv.writer(csvfile)
+    # 寫入二維表格
+    writer.writerows(table)
+
