@@ -1,0 +1,56 @@
+echo "# work2-2" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/JWMRO/work2-2.git
+git push -u origin main
+#前置作業
+from math import floor
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+import chromedriver_autoinstaller_fix
+from time import sleep
+#抓網站和網址
+driver = webdriver.Chrome
+
+driver.get("https://www.edu.tw/Default.aspx")
+#搜尋並查詢
+driver.find_element(By.ID, "RadioButtonList2_2").click()
+SelectElem = driver.find_element_by_class_name(By.NAME, "DropDownlist1")
+Select(SelectElem).select_by_value("01")
+driver.find_element(By.ID, "Button1").click()
+#建立csv檔
+table = [["學年度", "出處"]]
+totalPage = floor(int(driver.find_element(
+    By.ID, 'RecordCnt').find_element(By.TAG_NAME, "font").text)/10+1)
+
+print("totalPage", totalPage)
+
+for currentpage in range(1, totalPage):
+    for i, row in enumerate(driver.find_elements(By.CLASS_NAME, "GridViewRowStyle")):
+        rowData = []
+        for column in row.find_elements(By.TAG_NAME, "td"):
+            rowData.append(column.text)
+        table.append(rowData)
+
+    nextPage = driver.find_element(By.ID, 'BtnNext')
+    nextPage.click()
+    print("currentpage", currentpage)
+    #避免燒電腦
+    sleep(1)
+
+
+sleep(5)
+driver.close()
+
+table
+
+import csv
+
+with open('result.csv', 'w', newline='',encoding="utf8") as csvfile:
+  writer = csv.writer(csvfile)
+
+  # 寫入二維表格
+  writer.writerows(table)
