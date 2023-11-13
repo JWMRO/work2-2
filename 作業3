@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
 
 # 目標網站的URL
 url = "https://spiralabyss.org/zh"
@@ -12,13 +13,28 @@ if response.status_code == 200:
     soup = BeautifulSoup(response.text, 'html.parser')
 
     # 提取標題和連結
-    titles = soup.select('.entry-title')
-    links = soup.select('.entry-title a')
+    titles = soup.select('.character-name') 
+    links = soup.select('.character-link')  
 
-    # 印出結果
-    for title, link in zip(titles, links):
-        print(f"標題: {title.text}")
-        print(f"連結: {link['href']}")
-        print("\n")
+    # 創建 CSV 文件
+    with open('characters.csv', 'w', newline='', encoding='utf-8') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        # 寫入 CSV 表頭
+        csv_writer.writerow(['角色名稱', '詳細資料連結'])
+
+        # 遍歷標題和連結，並寫入 CSV 文件
+        for title, link in zip(titles, links):
+            character_name = title.text.strip()
+            details_link = link['href']
+
+            # 寫入 CSV 行
+            csv_writer.writerow([character_name, details_link])
+
+            print(f"角色名稱: {character_name}")
+            print(f"詳細資料連結: {details_link}")
+            print("\n")
+
+    print("CSV 文件已創建成功！")
 else:
     print(f"錯誤： {response.status_code}")
+
