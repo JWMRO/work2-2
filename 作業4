@@ -1,0 +1,39 @@
+#事前準備
+#scrapy startproject spiralabyss_crawler
+#cd spiralabyss_crawler
+#scrapy genspider spiralabyss_spider spiralabyss.org
+import scrapy
+import csv
+
+class SpiralabyssCharactersSpider(scrapy.Spider):
+    name = 'spiralabyss_characters'
+    allowed_domains = ['spiralabyss.org']
+    start_urls = ['https://spiralabyss.org/zh']
+
+    def parse(self, response):
+        # 使用 CSS 選擇器選擇角色數據的元素
+        characters = response.css('.character-list-item')
+
+        # 創建 CSV 文件
+        with open('characters.csv', 'w', newline='', encoding='utf-8') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            # 寫入 CSV 表頭
+            csv_writer.writerow(['角色名稱', '武器', '屬性', '元素', '詳細資料連結'])
+
+            # 遍歷角色元素，獲取信息並寫入 CSV 文件
+            for character in characters:
+                name = character.css('.character-name::text').get()
+                weapon = character.css('.character-weapon::text').get()
+                attribute = character.css('.character-attribute::text').get()
+                element = character.css('.character-element::text').get()
+                details_link = character.css('.character-link::attr(href)').get()
+
+                # 寫入 CSV 行
+                csv_writer.writerow([name, weapon, attribute, element, details_link])
+
+                # 打印爬取的信息（可選）
+                self.log(f'Name: {name}, Weapon: {weapon}, Attribute: {attribute}, Element: {element}, Link: {details_link}')
+
+        self.log('爬取完成！')
+
+
