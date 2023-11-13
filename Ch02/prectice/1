@@ -1,0 +1,17 @@
+#載pandas
+import pandas as pd
+#建立Series
+#data=pd.Series([20,10,15])
+#基本操作Series(可以當成exsell)
+#print(data)
+#print("Max", data.max())
+#print("Median", data.median())
+#數據放大兩倍
+#data=data*2
+#print(data)
+#比較運算
+#data=data==20
+#print(data)
+#建立DataFrame
+data=pd.DataFrame({ "name":["Amy","John","Bob"]
+    "salary":[30000, 50000, 40000] })

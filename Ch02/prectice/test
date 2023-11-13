@@ -1,0 +1,8 @@
+import pandas as pd
+import random
+import matplotlib.pyplot as plt
+
+plt.rc('font', family='Microsoft ChengHei') # 讓 plt 可以顯示中文
+
+df = pd.read_csv('111_student.csv', encoding='utf-8') # 讀取資料集檔案
+df.isnull().sum().sum() # 檢查空值數量
